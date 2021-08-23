@@ -1,0 +1,23 @@
+__pycache__/
+*.pyc
+wheels/
+venv/
+env/
+ENV/
+.env
+.venv
+profile_default/
+ipython_config.py
+__pypackages__/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# Others
+.idea/
+
+*.csv
+*.log
+*.lp
+*.sol
