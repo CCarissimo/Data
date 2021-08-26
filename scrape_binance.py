@@ -1,14 +1,14 @@
-import time
-import os
 import datetime as dt
 import pandas as pd
 import database as db
-from timer import timed
 import logging
 import logging.config
 import json
 from binance.client import Client
+from timer import timed
 from itertools import chain, islice
+from prefect import task
+from datetime import timedelta
 
 #logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
 #logger = logging.getLogger(__name__)
@@ -73,8 +73,19 @@ def scrape_historical(symbol: str, kline_size: str, start: dt.datetime, end: dt.
         db.timescaledb_parallel_copy(schema='prices', table='binance', df=df)
 
 
+@task(max_retries=5, retry_delay=timedelta(seconds=3))
 @timed
 def scrape_scheduler(symbol: str, kline_size: str):
+    print(symbol)
+    print(dt.datetime.now())
     start = db.get_latest_timestamp(schema='prices', table='binance', coin_id=COIN_IDS[symbol]) + dt.timedelta(minutes=1)
     df = scrape(symbol, kline_size, start)
-    db.copy_from_stringio('prices', 'binance', df)
+    if df.empty:
+        raise NoDataError
+    db.copy_from_stringio('prices', 'binance', df, f"NOTIFY test, 'new {symbol}';")
+    print(dt.datetime.now())
+
+
+class NoDataError(Exception):
+    pass
+
