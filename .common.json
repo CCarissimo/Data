@@ -1,0 +1,7 @@
+{
+    "user": "postgres",
+    "password": "test123",
+    "database": "production",
+    "binancePublicKey": "0Yu4UpGHzNeUaJGKC7ntOu5T6WxncQD7B6nnTCKnMI2DJmiMGbsKnxgvwZT99FmJ",
+    "binancePrivateKey": "IDO7TTNJbb3FsYxGC7WGv2BqUqWmcKRABnlWmAy1JNL7qMUHMXiovgi2hZOSfqGp"
+}

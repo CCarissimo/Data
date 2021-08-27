@@ -1,5 +1,4 @@
 import psycopg2
-import pandas as pd
 import os
 import datetime as dt
 import uuid
@@ -80,7 +79,7 @@ def timescaledb_parallel_copy(schema, table, df, workers=1):
 
 
 @timed
-def copy_from_stringio(schema, table, df):
+def copy_from_stringio(schema, table, df, notify_message = None):
     cols = get_columns(schema, table)
     buffer = StringIO()
     df[cols].to_csv(buffer, header=True, index=False)
@@ -91,6 +90,9 @@ def copy_from_stringio(schema, table, df):
         try:
             cursor.copy_expert(sql, file=buffer)
             con.commit()
+            if notify_message is not None:
+                cursor.execute(notify_message)
+                con.commit()
         except (Exception, psycopg2.DatabaseError) as error:
             logger.exception(error)
             con.rollback()
