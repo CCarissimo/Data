@@ -79,8 +79,9 @@ def timescaledb_parallel_copy(schema, table, df, workers=1):
 
 
 @timed
-def copy_from_stringio(schema, table, df, notify_message = None):
+def copy_from_stringio(schema, table, df, notify_message = None, default_cols):
     cols = get_columns(schema, table)
+    cols.remove(default_cols)
     buffer = StringIO()
     df[cols].to_csv(buffer, header=True, index=False)
     buffer.seek(0)
