@@ -24,7 +24,7 @@ logger = logging.getLogger("data")
 
 with open('.common.json') as f:
     common_vars = json.loads(f.read())
-if socket.gethostname() == 'ip-172-26-11-169':
+if socket.gethostname() == 'postgres':
     file = '.prod.json'
 else:
     file = '.dev.json'
@@ -79,7 +79,7 @@ def timescaledb_parallel_copy(schema, table, df, workers=1):
 
 
 @timed
-def copy_from_stringio(schema, table, df, notify_message = None, default_cols):
+def copy_from_stringio(schema, table, df, default_cols, notify_message = None):
     cols = get_columns(schema, table)
     cols.remove(default_cols)
     buffer = StringIO()

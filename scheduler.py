@@ -1,5 +1,4 @@
 import os
-os.chdir('/home/jasper/repos/algotrading/pipeline/Data')
 import scrape_binance as sb
 from datetime import timedelta
 from prefect.executors import DaskExecutor
