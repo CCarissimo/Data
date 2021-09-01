@@ -49,6 +49,7 @@ def parse_binance(data, symbol) -> pd.DataFrame:
     df['close_time'] = pd.to_datetime(df['close_time'], unit='ms')
     df['coin_id'] = COIN_IDS[symbol]
     df['datasource_id'] = 1
+    df['dumptime'] = dt.datetime.now()
     return df
 
 
@@ -83,7 +84,7 @@ def scrape_scheduler(symbol: str, kline_size: str):
     df = scrape(symbol, kline_size, start)
     if df.empty:
         raise NoDataError
-    db.copy_from_stringio('prices', 'coins', df, 'dumptime', f"NOTIFY test, 'new {symbol}';")
+    db.copy_from_stringio('prices', 'coins', df, f"NOTIFY test, 'new {symbol}';")
     print(dt.datetime.now())
 
 
