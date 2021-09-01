@@ -125,3 +125,15 @@ def get_latest_timestamp(schema, table, coin_id) -> dt.datetime:
         timestamp = cursor.fetchone()[0]
     
     return timestamp
+
+def get_latest_row(symbol = 'BTC'):
+    query = '''select *
+                from prices.coins p 
+                join common.coins c using(coin_id)
+                where p.abbreviation = %(symbol)s
+                order by "timestamp" desc limit 1 '''
+    with get_connection() as con:
+        df = pd.read_sql(query, con, params={'symbol': symbol})
+        
+    return df
+
