@@ -145,7 +145,7 @@ def get_latest_row(symbol = 'BTC'):
     return df
 
 
-def get_historical_rows(symbol = 'BTC'):
+def get_historical_rows(symbol = 'BTC', past_timestamp = ''):
     query = '''select *
                 from prices.coins p 
                 join common.coins c using(coin_id)
