@@ -4,8 +4,12 @@ import time
 import json
 from functools import wraps
 
+import os 
+script_directory = os.path.dirname(os.path.abspath(__file__))
+import sys 
+sys.path.append(script_directory)
 
-with open('logging.config') as f:
+with open(f'{script_directory}/logging.config') as f:
     LOG_CONFIG = json.loads(f.read())
 
 logging.config.dictConfig(LOG_CONFIG)

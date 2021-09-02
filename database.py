@@ -9,6 +9,12 @@ import json
 import socket
 from sqlalchemy import create_engine
 from contextlib import contextmanager
+
+import os 
+script_directory = os.path.dirname(os.path.abspath(__file__))
+import sys 
+sys.path.append(script_directory)
+
 from timer import timed
 from io import StringIO
 
@@ -16,19 +22,19 @@ from io import StringIO
 #logger = logging.getLogger(__name__)
 
 
-with open('logging.config') as f:
+with open(f'{script_directory}/logging.config') as f:
     LOG_CONFIG = json.loads(f.read())
 
 logging.config.dictConfig(LOG_CONFIG)
 logger = logging.getLogger("data")
 
-with open('.common.json') as f:
+with open(f'{script_directory}/.common.json') as f:
     common_vars = json.loads(f.read())
 if socket.gethostname() == 'ip-172-26-11-169':
     file = '.prod.json'
 else:
     file = '.dev.json'
-with open(file) as f:
+with open(f'{script_directory}/{file}') as f:
     env_vars = json.loads(f.read())
          
 env_vars.update(common_vars)    
@@ -126,12 +132,25 @@ def get_latest_timestamp(schema, table, coin_id) -> dt.datetime:
     
     return timestamp
 
+
 def get_latest_row(symbol = 'BTC'):
     query = '''select *
                 from prices.coins p 
                 join common.coins c using(coin_id)
                 where p.abbreviation = %(symbol)s
                 order by "timestamp" desc limit 1 '''
+    with get_connection() as con:
+        df = pd.read_sql(query, con, params={'symbol': symbol})
+        
+    return df
+
+
+def get_historical_rows(symbol = 'BTC'):
+    query = '''select *
+                from prices.coins p 
+                join common.coins c using(coin_id)
+                where p.abbreviation = %(symbol)s
+                and p.timestamp >= %(past_timestamp)s'''
     with get_connection() as con:
         df = pd.read_sql(query, con, params={'symbol': symbol})
         
