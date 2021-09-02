@@ -152,7 +152,7 @@ def get_historical_rows(symbol = 'BTC', past_timestamp = ''):
                 where p.abbreviation = %(symbol)s
                 and p.timestamp >= %(past_timestamp)s'''
     with get_connection() as con:
-        df = pd.read_sql(query, con, params={'symbol': symbol})
+        df = pd.read_sql(query, con, params={'symbol': symbol, 'past_timestamp': past_timestamp})
         
     return df
 
