@@ -30,7 +30,7 @@ logger = logging.getLogger("data")
 
 with open(f'{script_directory}/.common.json') as f:
     common_vars = json.loads(f.read())
-if socket.gethostname() == 'ip-172-26-11-169':
+if socket.gethostname() == 'postgres':
     file = '.prod.json'
 else:
     file = '.dev.json'
