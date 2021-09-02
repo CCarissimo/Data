@@ -1,5 +1,6 @@
 import psycopg2
 import os
+import pandas as pd
 import datetime as dt
 import uuid
 import itertools
@@ -137,7 +138,7 @@ def get_latest_row(symbol = 'BTC'):
     query = '''select *
                 from prices.coins p 
                 join common.coins c using(coin_id)
-                where p.abbreviation = %(symbol)s
+                where c.abbreviation = %(symbol)s
                 order by "timestamp" desc limit 1 '''
     with get_connection() as con:
         df = pd.read_sql(query, con, params={'symbol': symbol})
@@ -149,7 +150,7 @@ def get_historical_rows(symbol = 'BTC', past_timestamp = ''):
     query = '''select *
                 from prices.coins p 
                 join common.coins c using(coin_id)
-                where p.abbreviation = %(symbol)s
+                where c.abbreviation = %(symbol)s
                 and p.timestamp >= %(past_timestamp)s'''
     with get_connection() as con:
         df = pd.read_sql(query, con, params={'symbol': symbol, 'past_timestamp': past_timestamp})

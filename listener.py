@@ -3,9 +3,14 @@ import select
 import psycopg2
 import psycopg2.extensions
 
+import os 
+script_directory = os.path.dirname(os.path.abspath(__file__))
+import sys 
+sys.path.append(script_directory)
+
 channel = 'test'
 
-def listen_channel(channel):
+def listen_channel(channel, function):
     with get_connection() as con:
         
         con.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
@@ -21,4 +26,5 @@ def listen_channel(channel):
                 con.poll()
                 while con.notifies:
                     notify = con.notifies.pop(0)
+                    function()
                     print("Got NOTIFY:", notify.pid, notify.channel, notify.payload)
