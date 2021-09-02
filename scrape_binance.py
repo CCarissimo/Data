@@ -48,6 +48,8 @@ def parse_binance(data, symbol) -> pd.DataFrame:
     df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
     df['close_time'] = pd.to_datetime(df['close_time'], unit='ms')
     df['coin_id'] = COIN_IDS[symbol]
+    df['datasource_id'] = 1
+    df['dumptime'] = dt.datetime.now()
     return df
 
 
@@ -70,7 +72,7 @@ def scrape_historical(symbol: str, kline_size: str, start: dt.datetime, end: dt.
                                                             end.strftime(FORMAT))
     for batch in chunks(klines, size=250_000):
         df = parse_binance(batch, symbol)
-        db.timescaledb_parallel_copy(schema='prices', table='binance', df=df)
+        db.timescaledb_parallel_copy(schema='prices', table='coins', df=df)
 
 
 @task(max_retries=5, retry_delay=timedelta(seconds=3))
@@ -78,11 +80,11 @@ def scrape_historical(symbol: str, kline_size: str, start: dt.datetime, end: dt.
 def scrape_scheduler(symbol: str, kline_size: str):
     print(symbol)
     print(dt.datetime.now())
-    start = db.get_latest_timestamp(schema='prices', table='binance', coin_id=COIN_IDS[symbol]) + dt.timedelta(minutes=1)
+    start = db.get_latest_timestamp(schema='prices', table='coins', coin_id=COIN_IDS[symbol]) + dt.timedelta(minutes=1)
     df = scrape(symbol, kline_size, start)
     if df.empty:
         raise NoDataError
-    db.copy_from_stringio('prices', 'binance', df, f"NOTIFY test, 'new {symbol}';")
+    db.copy_from_stringio('prices', 'coins', df, f"NOTIFY test, 'new {symbol}';")
     print(dt.datetime.now())
 
 
