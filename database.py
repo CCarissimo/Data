@@ -156,3 +156,13 @@ def get_historical_rows(symbol = 'BTC', past_timestamp = ''):
         
     return df
 
+
+def trades_to_database(schema:str, table:str, stratname:str, list_of_trade_objects:list):
+    # construct df from list of trades
+    trades = [p.summary() for p in list_of_trade_objects]
+    df_trades = pd.DataFrame(trades).set_index('timestamp')
+    # check if the stratname and parameters already exist in the parameters table and add ID to the column
+
+
+    # add the df to the results table 
+    df_to_sql(schema, table, df_trades)
